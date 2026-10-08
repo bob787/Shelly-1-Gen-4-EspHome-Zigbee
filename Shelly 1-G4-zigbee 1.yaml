@@ -1,0 +1,64 @@
+esphome:
+  name: shelly-1-gen4-zigbee
+  friendly_name: Shelly 1 Gen4 Zigbee
+
+esp32:
+  variant: esp32c6
+  flash_size: 8MB
+  toolchain: platformio
+  framework:
+    type: esp-idf
+
+external_components:
+  - source: github://luar123/zigbee_esphome
+    components: [zigbee]
+
+logger:
+  level: INFO
+  hardware_uart: UART0         # logs on the programming header
+
+zigbee:
+  id: zb
+  router: true
+  power_supply: 1
+  components: all              # only named entities are exposed: just the relay
+
+switch:
+  - platform: gpio
+    id: relay
+    name: "Relay"
+    pin: GPIO5
+    restore_mode: RESTORE_DEFAULT_OFF
+
+binary_sensor:
+  # SW terminal: internal (no name)
+  - platform: gpio
+    id: sw_input
+    pin: GPIO10
+    filters:
+      - delayed_on_off: 50ms
+    on_state:                  # rocker switch; use on_press for a momentary button
+      then:
+        - switch.toggle: relay
+
+  # Onboard button: short press toggles, hold 5-15 s to leave/rejoin network
+  - platform: gpio
+    id: device_button
+    pin:
+      number: GPIO4
+      inverted: true
+      mode: INPUT_PULLUP
+    on_click:
+      - min_length: 50ms
+        max_length: 1s
+        then:
+          - switch.toggle: relay
+      - min_length: 5s
+        max_length: 15s
+        then:
+          - zigbee.reset: zb
+
+status_led:
+  pin:
+    number: GPIO0
+    inverted: true

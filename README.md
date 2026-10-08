@@ -7,7 +7,19 @@ Use a **Shelly 1 Gen4** as a local Zigbee relay with ESPHome firmware and Home A
 
 ## Why this project?
 
-I prefer Zigbee devices because they can operate locally without depending on a vendor's cloud service. When I tried the Shelly Gen4 relay, I found that firmware updates through ZHA still required Wi-Fi. I wanted a Zigbee-only device with a practical firmware-update path through ESPHome.
+When Shelly launched their Gen 4 relays with zigbee, I was genuinely excited. I prefer
+Zigbee devices because they are inherently local. They can never be paywalled,
+locked out, feature reduced, or cancelled.
+
+When I finally got one, I learned the truth. They work fine on Zigbee, but firmware
+updates (At least through ZHA) were gated to Wifi. That’s right… If you want new
+firmware, you need to run two protocols. If you turn off Wifi and change your mind
+later, your only recourse is to reach inside a live electrical box and press the relay
+button.
+
+I wanted a Zigbee only device with a ZHA upgrade path. I settled on ESPhome
+because its simple and recently adopted more comprehensive zigbee controls. I got
+my Shelly 1 Gen 4 paired with ZHA and the relay works in attached mode.
 
 This project was inspired by [automatous-io's Shelly 1 Gen4 Matter over Thread project](https://github.com/automatous-io/shelly-1-gen4-matter-thread). Shelly's product documentation is available in the [Shelly knowledge base](https://kb.shelly.cloud/knowledge-base/shelly-1pm-gen4).
 
@@ -32,7 +44,11 @@ The main job is making a reliable, reversible connection between the Shelly's 1.
 | 1.27 mm and 2.54 mm pin headers | [Example headers](https://www.amazon.com/dp/B0CTKCWNGK) or [2.54 mm headers](https://www.amazon.com/dp/B07R5QDL8D) | ~$10 |
 | Dupont jumper cables | [Example cable kit](https://www.amazon.com/dp/B01EV70C78) | $7 |
 
-These are example parts, not endorsements; equivalent parts are fine. The essential requirements are a dependable connection to TX, RX, 3.3 V and GND, plus a way to momentarily connect **GPIO0/BOOT to GND** to enter the ESP32-C6 bootloader.
+The Shelly 1 Gen 4 has 1.27mm pitch pins while USB to UART adapters have 2.54mm
+pitch pins. I had a cheap adapter board, but I’ve seen sewing pins, 3d printed pogo pin
+alignment boards, and many other ways to get this to work. You need a secure way to
+connect 4 pins from Shelly to the USB adapter and a quick reversible way to bridge
+the Shelly’s GPIO00 Pin to Ground to enter bootloader mode. The essential requirement is a dependable connection to TX, RX, 3.3 V and GND, plus a way to momentarily connect **GPIO0/BOOT to GND** to enter the ESP32-C6 bootloader.
 
 ## Programming header and UART wiring
 
